@@ -1,7 +1,7 @@
 from lettuce import before, world, after
 from splinter.browser import Browser
 from salad.logger import logger
-
+import os
 
 @before.all
 def setup_master_browser():
@@ -25,6 +25,25 @@ def setup_browser(browser, url=None, **capabilities):
     try:
         if url:
             logger.warn(capabilities)
+        # support sauce config via SELENIUM_DRIVER
+        # to support use via Jenkins Sauce plugin
+        is_sauce = 'SELENIUM_DRIVER' in os.environ
+        if is_sauce:
+            driver_info = dict(
+                [v.split('=', 2)
+                for v in os.environ['SELENIUM_DRIVER'].split('?')[1].split('&')
+            ])
+            logger.info('Sauce configuration detected')
+            desired_capabilities = {}
+            desired_capabilities['browserName'] = driver_info['browser']
+            desired_capabilities['version'] = driver_info['browser-version']
+            desired_capabilities['platform'] = driver_info['os']
+            url = "http://%s:%s@%s:%s/wd/hub" % (
+                driver_info['username'], driver_info['access-key'],
+                os.environ.get('SELENIUM_HOST', 'ondemand.saucelabs.com'),
+                os.environ.get('SELENIUM_PORT', 80))
+            browser = Browser('remote', url=url, **desired_capabilities)
+        elif url:
             browser = Browser('remote', url=url,
                     browser=browser, **capabilities)
         else:
