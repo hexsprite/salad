@@ -21,8 +21,8 @@ def setup_master_browser():
 
 
 def setup_browser(browser, url=None, **capabilities):
-    logger.info("Setting up browser %s..." % browser)
     browser = os.environ.get('LETTUCE_BROWSER', browser)
+    logger.info("Setting up browser %s..." % browser)
 
     try:
         if url:
