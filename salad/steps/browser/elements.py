@@ -14,7 +14,6 @@ def wait_for_completion(wait_time, method, *args):
     waiter = SaladWaiter(wait_time, ignored_exceptions=AssertionError)
     waiter.until(method, *args)
 
-
 # the following three steps do not use the ExistenceStepsFactory
 @step(r'should( not)? see "([^"]*)" (?:somewhere|anywhere) in (?:the|this) page(?: within (\d+) seconds)?')
 def should_see_in_the_page(step, negate, text, wait_time):
